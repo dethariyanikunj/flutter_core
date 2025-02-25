@@ -172,7 +172,9 @@ class MyApp extends StatelessWidget {
       translations: Languages(),
       locale: Get.deviceLocale,
       fallbackLocale: const Locale('en', 'US'),
+      {{#uses_notifications_features}}
       navigatorKey: navigatorKey,
+      {{/uses_notifications_features}}
     );
   }
 }
