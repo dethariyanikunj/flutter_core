@@ -15,4 +15,16 @@ class AppPricingFormats {
     }
     return null;
   }
+
+  static double? decodeFormattedPrice(String? formattedPrice) {
+    if (formattedPrice == null || formattedPrice.trim().isEmpty) {
+      return null;
+    }
+    // Remove rupee symbol and any non-numeric characters except the decimal separator
+    String cleanedPrice = formattedPrice.replaceAll(
+      RegExp(r'[^\d.]'),
+      '',
+    ); // Keep numbers and decimal
+    return double.tryParse(cleanedPrice);
+  }
 }
