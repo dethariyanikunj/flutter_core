@@ -12,8 +12,9 @@ class AppStringUtils {
   /// Use a regular expression to add a space after every 5 digits
   static String addSpaceAfterFiveDigits(String input) {
     return input.replaceAllMapped(
-      RegExp(r'(\d{5})(?=\d)'),
-      (match) => '${match.group(1)} ',
+      RegExp(r'(.{5})(?=.)'),
+      // Match any 5 characters, ensure at least one more character follows
+          (match) => '${match.group(1)} ',
     );
   }
 
@@ -31,5 +32,18 @@ class AppStringUtils {
       return formatted;
     }
     return value;
+  }
+
+  static String maskMobileNumber(String phoneNumber) {
+    // Remove any spaces from the input
+    String cleanedNumber = phoneNumber.replaceAll(' ', '');
+    if (cleanedNumber.length < 4) {
+      return phoneNumber; // Return as is if length is less than 4
+    }
+    // Mask all but the last four digits
+    String maskedPart = '*' * (cleanedNumber.length - 4);
+    String visiblePart = cleanedNumber.substring(cleanedNumber.length - 4);
+    // Format with space if needed
+    return '$maskedPart$visiblePart';
   }
 }
