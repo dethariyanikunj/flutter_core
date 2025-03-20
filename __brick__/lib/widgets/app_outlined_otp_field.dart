@@ -175,23 +175,28 @@ class _AppOutlinedOtpFieldState extends State<AppOutlinedOtpField>
                   }
                 },
                 onTextChanged: (value) async {
-                  if (value.length == maxChars) {
-                    if (index < AppConfig.mobileOtpLength - 1) {
+                  if (value.isEmpty) {
+                    if (index > 0) {
+                      FocusScope.of(context)
+                          .requestFocus(_fieldFocusNode(index - 1));
+                    }
+                  } else if (value.length == maxChars) {
+                    if (index < widget.otpLength - 1) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        FocusScope.of(context).requestFocus(
-                          _fieldFocusNode(index + 1),
-                        );
+                        FocusScope.of(context)
+                            .requestFocus(_fieldFocusNode(index + 1));
                       });
                     }
                   }
+
                   if (index == 0) {
                     await _handleClipboardData();
                   }
-                  String otp = '';
-                  for (int i = 0; i < widget.otpLength; i++) {
-                    otp += _textEditingControllers[i].text;
-                  }
+
+                  String otp =
+                      _textEditingControllers.map((e) => e.text).join();
                   widget.onOtpTextCompleted(otp);
+
                   // If all fields are filled, remove focus
                   if (otp.length == widget.otpLength) {
                     FocusManager.instance.primaryFocus?.unfocus();
