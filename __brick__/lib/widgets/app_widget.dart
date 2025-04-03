@@ -2,6 +2,7 @@ export './app_date_picker.dart';
 export './app_filled_button.dart';
 export './app_image_view.dart';
 export './app_no_internet_view.dart';
+export './app_otp_field.dart';
 export './app_outlined_button.dart';
 export './app_outlined_input_field.dart';
 export './app_outlined_otp_field.dart';

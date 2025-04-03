@@ -275,6 +275,7 @@ void _buildDependencies(HookContext context) async {
   await Process.run('flutter', ['pub', 'add', 'cached_network_image']);
   await Process.run('flutter', ['pub', 'add', 'flutter_dotenv']);
   await Process.run('flutter', ['pub', 'add', 'toastification']);
+  await Process.run('flutter', ['pub', 'add', 'pinput']);
 
   if (context.vars['uses_firebase_features'] ||
       context.vars['uses_notifications_features']) {
