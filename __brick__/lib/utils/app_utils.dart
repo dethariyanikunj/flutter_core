@@ -5,6 +5,7 @@ export './app_config.dart';
 export './app_connectivity_manager.dart';
 export './app_date_time_utils.dart';
 export './app_dimens.dart';
+export './app_env_info.dart';
 export './app_font_weight_enum.dart';
 export './app_gradients.dart';
 export './app_info.dart';

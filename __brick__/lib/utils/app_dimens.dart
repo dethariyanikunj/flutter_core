@@ -7,6 +7,7 @@ class AppDimens {
   static const double dimensOutlinedInputFieldSeparateTitleSpacing = 8;
   static const double dimensOutlinedInputFieldContentPadding = 12;
   static const double dimensOtpInputFieldSize = 52;
+  static const double dimensBottomSheetTitleHeight = 56;
 
 
   static const double negDimens1 = -1;
@@ -35,4 +36,5 @@ class AppDimens {
   static const double dimens23 = 23;
   static const double dimens24 = 24;
   static const double dimens25 = 25;
+  static const double dimens30 = 30;
 }

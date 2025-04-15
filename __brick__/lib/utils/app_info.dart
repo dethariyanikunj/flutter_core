@@ -45,4 +45,14 @@ class AppInfo {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
   }
+
+  Future<String> getAppVersionCode() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.buildNumber;
+  }
+
+  Future<String> getAppBundleId() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.packageName;
+  }
 }

@@ -5,6 +5,7 @@ import 'package:mason/mason.dart';
 void run(HookContext context) async {
   _buildAssets(context);
   _includeEnvAtPubspec(context);
+  _buildInAppUpdateFeature(context);
   _buildFirebaseFeature(context);
   _buildNotificationFeature(context);
   _buildDependencies(context);
@@ -77,13 +78,13 @@ void _includeAssetsAtPubspec(HookContext context) {
       } else if (!hasAssetsHeader) {
         // Add 'assets' section under 'flutter' if missing.
         final flutterIndex =
-            lines.indexWhere((line) => line.startsWith(flutterHeader));
+        lines.indexWhere((line) => line.startsWith(flutterHeader));
         lines.insert(flutterIndex + 1, assetsHeader);
         lines.insert(flutterIndex + 2, imagesEntry);
       } else {
         // Add the images entry under the existing 'assets' section.
         final assetsIndex =
-            lines.indexWhere((line) => line.startsWith(assetsHeader));
+        lines.indexWhere((line) => line.startsWith(assetsHeader));
         lines.insert(assetsIndex + 1, imagesEntry);
       }
 
@@ -199,13 +200,13 @@ void _includeEnvAtPubspec(HookContext context) {
       } else if (!hasAssetsHeader) {
         // Add 'assets' section under 'flutter' if missing.
         final flutterIndex =
-            lines.indexWhere((line) => line.startsWith(flutterHeader));
+        lines.indexWhere((line) => line.startsWith(flutterHeader));
         lines.insert(flutterIndex + 1, assetsHeader);
         lines.insert(flutterIndex + 2, envEntry);
       } else {
         // Add the images entry under the existing 'assets' section.
         final assetsIndex =
-            lines.indexWhere((line) => line.startsWith(assetsHeader));
+        lines.indexWhere((line) => line.startsWith(assetsHeader));
         lines.insert(assetsIndex + 1, envEntry);
       }
 
@@ -224,7 +225,22 @@ void _includeEnvAtPubspec(HookContext context) {
   }
 }
 
-void _buildFirebaseFeature(HookContext context) async {
+void _buildInAppUpdateFeature(HookContext context) {
+  final projectPath = Directory.current.path;
+  final useInAppUpdate = context.vars['uses_in_app_update_feature'] as bool? ??
+      true;
+  if (!useInAppUpdate) {
+    final inAppUpdateFolder = Directory('$projectPath/lib/in_app_update');
+    if (inAppUpdateFolder.existsSync()) {
+      inAppUpdateFolder.deleteSync(recursive: true);
+      context.logger.info(
+        '🗑️ Removed in_app_update/ folder since Firebase is disabled.',
+      );
+    }
+  }
+}
+
+void _buildFirebaseFeature(HookContext context) {
   final projectPath = Directory.current.path;
   final useFirebase = context.vars['uses_firebase_features'] as bool? ?? true;
 
@@ -233,12 +249,13 @@ void _buildFirebaseFeature(HookContext context) async {
     if (firebaseFile.existsSync()) {
       firebaseFile.deleteSync();
       context.logger.info(
-          '🗑️ Removed firebase_options.dart since Firebase is disabled.');
+          '🗑️ Removed firebase_options.dart since Firebase is disabled.',
+      );
     }
   }
 }
 
-void _buildNotificationFeature(HookContext context) async {
+void _buildNotificationFeature(HookContext context) {
   final projectPath = Directory.current.path;
   final useNotifications =
       context.vars['uses_notifications_features'] as bool? ?? true;
@@ -248,12 +265,13 @@ void _buildNotificationFeature(HookContext context) async {
     if (notificationFolder.existsSync()) {
       notificationFolder.deleteSync(recursive: true);
       context.logger.info(
-          '🗑️ Removed notification/ folder since notifications are disabled.');
+          '🗑️ Removed notification/ folder since notifications are disabled.',
+      );
     }
   }
 }
 
-void _buildDependencies(HookContext context) async {
+Future<void> _buildDependencies(HookContext context) async {
   final progress = context.logger.progress('Installing packages');
   // Install below dependencies
   await Process.run('flutter', ['pub', 'add', 'get']);
@@ -276,6 +294,10 @@ void _buildDependencies(HookContext context) async {
   await Process.run('flutter', ['pub', 'add', 'flutter_dotenv']);
   await Process.run('flutter', ['pub', 'add', 'toastification']);
   await Process.run('flutter', ['pub', 'add', 'pinput']);
+
+  if (context.vars['uses_in_app_update_feature']) {
+    await Process.run('flutter', ['pub', 'add', 'in_app_update']);
+  }
 
   if (context.vars['uses_firebase_features'] ||
       context.vars['uses_notifications_features']) {

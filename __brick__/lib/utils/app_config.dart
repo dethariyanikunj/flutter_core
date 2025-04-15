@@ -11,4 +11,7 @@ class AppConfig {
   static const bool isRefreshTokenEnabled = false;
   static const bool isOtpPrefilledWithClipBoard = false;
   static Size figmaScreenSize = const Size(428, 926);
+  // TODO: Replace app name and apple id here to redirect to app store
+  static const String iOSAppStoreLink =
+      'https://apps.apple.com/us/app/{{apple_app_name}}/id{{apple_app_id}}';
 }

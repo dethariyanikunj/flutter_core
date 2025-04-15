@@ -1,3 +1,6 @@
+{{#uses_in_app_update_feature}}
+import 'dart:convert';
+{{/uses_in_app_update_feature}}
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' as get_x;
@@ -9,6 +12,9 @@ import './interceptor/auth_interceptor.dart';
 
 class ApiService {
   late Dio _dio;
+  {{#uses_in_app_update_feature}}
+  late Dio _dioITunes;
+  {{/uses_in_app_update_feature}}
 
   final String _refreshTokenEndpoint; // Refresh token API endpoint
   String? _accessToken;
@@ -49,6 +55,34 @@ class ApiService {
       );
     }
   }
+
+  {{#uses_in_app_update_feature}}
+  ApiService.iTunes({
+    required String baseUrl,
+    Map<String, String>? defaultHeaders,
+    bool enableLogging = false,
+  })  : _refreshTokenEndpoint = '',
+        onRefreshTokenExpired = null {
+    _dioITunes = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        headers: defaultHeaders ?? {},
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+
+    if (enableLogging) {
+      _dioITunes.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          requestHeader: true,
+          responseBody: true,
+        ),
+      );
+    }
+  }
+  {{/uses_in_app_update_feature}}
 
   /// Set or Update Tokens
   void setTokens({
@@ -129,6 +163,30 @@ class ApiService {
       return ApiResponse(error: ApiError.fromDioError(e));
     }
   }
+
+  {{#uses_in_app_update_feature}}
+  /// Generic GET iTunes Request
+  Future<ApiResponse<T>> getItunesRequest<T>(
+      String endpoint, {
+        Map<String, dynamic>? queryParams,
+        Map<String, String>? headers,
+        required T Function(dynamic data) fromJson, // Model binding
+      }) async {
+    try {
+      if (ConnectivityManager.instance.isNetConnected.isFalse) {
+        return ApiResponse(error: ApiError.internetConnectionError());
+      }
+      final response = await _dioITunes.get(
+        endpoint,
+        queryParameters: queryParams,
+        options: Options(headers: headers),
+      );
+      return ApiResponse(data: fromJson(json.decode(response.data.trim())));
+    } on DioException catch (e) {
+      return ApiResponse(error: ApiError.fromDioError(e));
+    }
+  }
+  {{/uses_in_app_update_feature}}
 
   /// Generic POST Request
   Future<ApiResponse<T>> postRequest<T>(

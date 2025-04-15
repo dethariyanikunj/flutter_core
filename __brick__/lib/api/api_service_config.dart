@@ -1,10 +1,11 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import './api.dart';
+import '../utils/app_utils.dart';
+
 
 class ApiServiceConfig {
   static final apiService = ApiService(
-    baseUrl: dotenv.get('API_BASE_URL'),
+    baseUrl: AppEnvInfo.apiBaseUrl,
     defaultHeaders: {
       'Content-Type': 'application/json',
     },
@@ -14,4 +15,14 @@ class ApiServiceConfig {
       // show dialog from here!
     },
   );
+
+  {{#uses_in_app_update_feature}}
+  static final iTunesApiService = ApiService.iTunes(
+    baseUrl: AppEnvInfo.iTunesBaseUrl,
+    defaultHeaders: {
+      'Content-Type': 'application/json',
+    },
+    enableLogging: true,
+  );
+  {{/uses_in_app_update_feature}}
 }

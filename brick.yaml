@@ -29,13 +29,31 @@ vars:
   app_name:
     type: string
     description: Name of app
-    default: Project Core
+    default: flutter_core
     prompt: What is name of app?
   google_fonts_name:
     type: string
     description: Name of Google fonts - make sure name should match with https://fonts.google.com/
     default: Lato
     prompt: What is name of Google Fonts?
+  uses_in_app_update_feature:
+    type: boolean
+    description: To use in app update feature in project
+    default: true
+    prompt: Do you want to add in app update feature?
+  apple_app_name:
+    type: string
+    description: To use in app update redirection
+    default: xxx
+    prompt: What is apple project name? (Only if in app update is enabled)
+  apple_app_id:
+    type: string
+    description: To use in app update redirection
+    default: xxx
+    prompt: |
+      What is the Apple ID?
+      (Only if in-app update is enabled)
+      👉 Check your TODO list if you don't have it.
   uses_firebase_features:
     type: boolean
     description: To use firebase in project

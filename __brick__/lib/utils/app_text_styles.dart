@@ -15,6 +15,7 @@ class AppTextStyle {
     double? fontSize,
     Color? color,
     FontWeight? fontWeight,
+    double? lineHeight,
   }) =>
       GoogleFonts.getFont(
         '{{google_fonts_name}}',
@@ -25,15 +26,41 @@ class AppTextStyle {
         ),
       );
 
-  static TextStyle get textSize16Bold => _getTextStyle(
+  static TextStyle get textSize16Regular =>
+      _getTextStyle(
+        fontSize: AppDimens.dimens16.sp,
+        fontWeight: FontWeight.w400,
+        lineHeight: 20 / 16,
+      );
+
+  static TextStyle get textSize16SemiBold =>
+      _getTextStyle(
+        fontSize: AppDimens.dimens16.sp,
+        color: AppColors.colorWhite,
+        fontWeight: FontWeight.w600,
+        lineHeight: 20 / 16,
+      );
+
+  static TextStyle get textSize16Bold =>
+      _getTextStyle(
         fontSize: AppDimens.dimens16.sp,
         color: AppColors.colorWhite,
         fontWeight: FontWeight.w700,
+        lineHeight: 20 / 16,
       );
 
-  static TextStyle get textSize24SemiBold => _getTextStyle(
+  static TextStyle get textSize18Bold =>
+      _getTextStyle(
+        fontSize: AppDimens.dimens18.sp,
+        fontWeight: FontWeight.w700,
+        lineHeight: 22 / 18,
+      );
+
+  static TextStyle get textSize24SemiBold =>
+      _getTextStyle(
         fontSize: AppDimens.dimens24.sp,
         color: AppColors.colorBlack,
         fontWeight: FontWeight.w600,
+        lineHeight: 30 / 24,
       );
 }
