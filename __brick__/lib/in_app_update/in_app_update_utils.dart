@@ -122,6 +122,7 @@ class InAppUpdateUtils {
       queryParams: {
         'bundleId': bundleId,
         'country': _countryCode,
+        't': DateTime.now().millisecondsSinceEpoch,
       },
       fromJson: (data) => IosInAppUpdateResponse.fromJson(data),
     );
