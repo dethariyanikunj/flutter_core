@@ -109,6 +109,8 @@ class ApiService {
           if (newAccessToken != null && newRefreshToken != null) {
             _accessToken = newAccessToken;
             _refreshToken = newRefreshToken;
+            final prefUtils = PrefUtils();
+            await prefUtils.setAuthToken(newAccessToken);
             isRefreshTokenSuccess = true; // Refresh successful
           }
         }

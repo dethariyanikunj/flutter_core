@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../api_endpoints.dart';
 import '../api_services.dart';
 
 class AuthInterceptor extends Interceptor {
@@ -20,7 +21,13 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final uri = err.requestOptions.path.toString();
     if (err.response?.statusCode == 401) {
+      if (uri == ApiEndpoints.refreshToken) {
+        // Refresh token failed, notify the app
+        handler.reject(err);
+        return;
+      }
       // If unauthorized, attempt to refresh the access token
       final refreshed = await _apiService.refreshAccessToken();
       if (refreshed) {

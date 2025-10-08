@@ -1,7 +1,6 @@
-
 import './api.dart';
 import '../utils/app_utils.dart';
-
+import '../widgets/app_widget.dart';
 
 class ApiServiceConfig {
   static final apiService = ApiService(
@@ -13,6 +12,11 @@ class ApiServiceConfig {
     enableLogging: true,
     onRefreshTokenExpired: () {
       // show dialog from here!
+      Future.delayed(const Duration(seconds: 1), () {
+        if (AppSessionExpired.isOpened == false) {
+          AppSessionExpired.showBottomSheet();
+        }
+      });
     },
   );
 

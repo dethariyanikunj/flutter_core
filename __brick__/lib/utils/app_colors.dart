@@ -23,6 +23,7 @@ class AppColors {
   static const Color colorE0E0E0 = Color(0xffE0E0E0);
   static const Color colorF0F7FC = Color(0xffF0F7FC);
   static const Color color6C6C6C = Color(0xff6C6C6C);
+  static const Color colorFF0000 = Color(0xffFF0000);
   static Color colorBarrier = colorBlack.withOpacity(0.6);
   static const Color colorTransparent = Colors.transparent;
 }

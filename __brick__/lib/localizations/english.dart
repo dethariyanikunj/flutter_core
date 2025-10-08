@@ -7,6 +7,10 @@ class English {
       LanguageKey.noInternetConnection:
           'It seems you are not connected to the internet.',
       LanguageKey.oopsSomethingWentWrong: 'Oops! Something went wrong.',
+      LanguageKey.sessionExpired: 'Session Expired',
+      LanguageKey.sessionExpiredMessage:
+      'For security reasons, you’ve been logged out. Please login again.',
+      LanguageKey.loginAgain: 'Login Again',
       {{#uses_in_app_update_feature}}
       LanguageKey.updateRequired: 'Update Required',
       LanguageKey.updateAvailable: 'A new version of the app is now available.',
