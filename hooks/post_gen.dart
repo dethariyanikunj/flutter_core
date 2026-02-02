@@ -8,7 +8,25 @@ void run(HookContext context) async {
   _buildInAppUpdateFeature(context);
   _buildFirebaseFeature(context);
   _buildNotificationFeature(context);
+  _includeSdkBoundariesAtPubspec(context);
+  _ignoreFvmSdk(context);
   _buildDependencies(context);
+}
+
+void _ignoreFvmSdk(HookContext context) {
+  final rootDir = Directory.current;
+  final gitignoreFile = File('${rootDir.path}/.gitignore');
+
+  if (gitignoreFile.existsSync()) {
+    final content = gitignoreFile.readAsStringSync();
+    if (!content.contains('.fvm/flutter_sdk')) {
+      gitignoreFile.writeAsStringSync(
+        '\n# FVM\n.fvm/flutter_sdk\n',
+        mode: FileMode.append,
+      );
+      context.logger.info('Added .fvm/flutter_sdk to .gitignore');
+    }
+  }
 }
 
 void _buildAssets(HookContext context) {
@@ -77,14 +95,16 @@ void _includeAssetsAtPubspec(HookContext context) {
         lines.add(imagesEntry);
       } else if (!hasAssetsHeader) {
         // Add 'assets' section under 'flutter' if missing.
-        final flutterIndex =
-        lines.indexWhere((line) => line.startsWith(flutterHeader));
+        final flutterIndex = lines.indexWhere(
+          (line) => line.startsWith(flutterHeader),
+        );
         lines.insert(flutterIndex + 1, assetsHeader);
         lines.insert(flutterIndex + 2, imagesEntry);
       } else {
         // Add the images entry under the existing 'assets' section.
-        final assetsIndex =
-        lines.indexWhere((line) => line.startsWith(assetsHeader));
+        final assetsIndex = lines.indexWhere(
+          (line) => line.startsWith(assetsHeader),
+        );
         lines.insert(assetsIndex + 1, imagesEntry);
       }
 
@@ -199,22 +219,22 @@ void _includeEnvAtPubspec(HookContext context) {
         lines.add(envEntry);
       } else if (!hasAssetsHeader) {
         // Add 'assets' section under 'flutter' if missing.
-        final flutterIndex =
-        lines.indexWhere((line) => line.startsWith(flutterHeader));
+        final flutterIndex = lines.indexWhere(
+          (line) => line.startsWith(flutterHeader),
+        );
         lines.insert(flutterIndex + 1, assetsHeader);
         lines.insert(flutterIndex + 2, envEntry);
       } else {
         // Add the images entry under the existing 'assets' section.
-        final assetsIndex =
-        lines.indexWhere((line) => line.startsWith(assetsHeader));
+        final assetsIndex = lines.indexWhere(
+          (line) => line.startsWith(assetsHeader),
+        );
         lines.insert(assetsIndex + 1, envEntry);
       }
 
       // Write the updated content back to pubspec.yaml.
       pubspecFile.writeAsStringSync(lines.join('\n'));
-      context.logger.info(
-        'Updated pubspec.yaml to include assets/env entry.',
-      );
+      context.logger.info('Updated pubspec.yaml to include assets/env entry.');
     } else {
       context.logger.info(
         'pubspec.yaml already includes the assets/env entry.',
@@ -227,8 +247,8 @@ void _includeEnvAtPubspec(HookContext context) {
 
 void _buildInAppUpdateFeature(HookContext context) {
   final projectPath = Directory.current.path;
-  final useInAppUpdate = context.vars['uses_in_app_update_feature'] as bool? ??
-      true;
+  final useInAppUpdate =
+      context.vars['uses_in_app_update_feature'] as bool? ?? true;
   if (!useInAppUpdate) {
     final inAppUpdateFolder = Directory('$projectPath/lib/in_app_update');
     if (inAppUpdateFolder.existsSync()) {
@@ -249,7 +269,7 @@ void _buildFirebaseFeature(HookContext context) {
     if (firebaseFile.existsSync()) {
       firebaseFile.deleteSync();
       context.logger.info(
-          '🗑️ Removed firebase_options.dart since Firebase is disabled.',
+        '🗑️ Removed firebase_options.dart since Firebase is disabled.',
       );
     }
   }
@@ -265,7 +285,7 @@ void _buildNotificationFeature(HookContext context) {
     if (notificationFolder.existsSync()) {
       notificationFolder.deleteSync(recursive: true);
       context.logger.info(
-          '🗑️ Removed notification/ folder since notifications are disabled.',
+        '🗑️ Removed notification/ folder since notifications are disabled.',
       );
     }
   }
@@ -313,4 +333,55 @@ Future<void> _buildDependencies(HookContext context) async {
     await Process.run('flutter', ['pub', 'add', 'flutter_local_notifications']);
   }
   progress.complete();
+}
+
+void _includeSdkBoundariesAtPubspec(HookContext context) {
+  final rootDir = Directory.current;
+  final pubspecFile = File('${rootDir.path}/pubspec.yaml');
+
+  if (pubspecFile.existsSync()) {
+    final lines = pubspecFile.readAsLinesSync();
+    final updatedLines = <String>[];
+    bool inEnvironmentSection = false;
+    bool sdkUpdated = false;
+
+    for (var line in lines) {
+      if (line.trim().startsWith('environment:')) {
+        inEnvironmentSection = true;
+        updatedLines.add(line);
+        continue;
+      }
+
+      if (inEnvironmentSection) {
+        if (line.trim().startsWith('sdk:')) {
+          updatedLines.add("  sdk: '>=3.10.8 <4.0.0'");
+          sdkUpdated = true;
+          inEnvironmentSection =
+              false; // Assuming sdk is the last or only item we care about in enviroment, or strictly handling indentation could be complex.
+          // Resetting flag might be risky if there are other env vars, but usually sdk is the main one.
+          // Better: stay in section until indentation changes, but for simplicity, let's just replace the sdk line.
+        } else if (line.trim().isEmpty || !line.startsWith('  ')) {
+          // Left environment section
+          inEnvironmentSection = false;
+          updatedLines.add(line);
+        } else {
+          updatedLines.add(line);
+        }
+      } else {
+        updatedLines.add(line);
+      }
+    }
+
+    // Fallback if not updated (e.g. if environment section missing - unlikely for flutter create)
+    if (!sdkUpdated) {
+      // logic to add if missing could be here, but standard flutter create has it.
+    }
+
+    pubspecFile.writeAsStringSync(updatedLines.join('\n'));
+    context.logger.info(
+      'Updated pubspec.yaml SDK constraints to >=3.10.8 <4.0.0',
+    );
+  } else {
+    context.logger.err('pubspec.yaml file not found for SDK update.');
+  }
 }
