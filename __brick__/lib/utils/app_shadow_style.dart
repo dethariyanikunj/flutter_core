@@ -6,7 +6,7 @@ class AppShadowStyle {
   static List<BoxShadow> titleBarShadow() {
     return [
       BoxShadow(
-        color: AppColors.colorBlack.withOpacity(0.05),
+        color: AppColors.colorBlack.withValues(alpha: 0.05),
         spreadRadius: 5,
         blurRadius: 10,
         offset: const Offset(0, 4),

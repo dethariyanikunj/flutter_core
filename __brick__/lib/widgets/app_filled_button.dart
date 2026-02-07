@@ -37,38 +37,36 @@ class AppFilledButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return alignment != null
         ? Align(
-            alignment: alignment ?? Alignment.center,
-            child: buildFilledButtonWidget)
+          alignment: alignment ?? Alignment.center,
+          child: buildFilledButtonWidget,
+        )
         : buildFilledButtonWidget;
   }
 
   Widget get buildFilledButtonWidget => Container(
-        height: height ?? AppDimens.dimensButtonHeight.h,
-        width: width ?? double.maxFinite,
-        margin: margin,
-        decoration: decoration,
-        child: FilledButton(
-          style: buttonStyle ?? AppButtonStyles().filledButtonTheme.style,
-          onPressed: isDisabled ?? false ? null : onPressed ?? () {},
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              leftIcon ?? const SizedBox.shrink(),
-              Text(
-                text,
-                style: buttonTextStyle ??
-                    AppButtonStyles()
-                        .filledButtonTheme
-                        .style
-                        ?.textStyle
-                        ?.resolve(
-                          WidgetState.values.toSet(),
-                        ),
-              ),
-              rightIcon ?? const SizedBox.shrink(),
-            ],
+    height: height ?? AppDimens.dimensButtonHeight.h,
+    width: width ?? double.maxFinite,
+    margin: margin,
+    decoration: decoration,
+    child: FilledButton(
+      style: buttonStyle ?? AppButtonStyles().filledButtonTheme.style,
+      onPressed: isDisabled ?? false ? null : onPressed ?? () {},
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          leftIcon ?? const SizedBox.shrink(),
+          Text(
+            text,
+            style:
+                buttonTextStyle ??
+                AppButtonStyles().filledButtonTheme.style?.textStyle?.resolve(
+                  WidgetState.values.toSet(),
+                ),
           ),
-        ),
-      );
+          rightIcon ?? const SizedBox.shrink(),
+        ],
+      ),
+    ),
+  );
 }

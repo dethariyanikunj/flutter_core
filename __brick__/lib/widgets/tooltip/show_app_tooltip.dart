@@ -21,10 +21,10 @@ class ShowAppTooltip {
     _backgroundOverlay = _getBackgroundOverlay();
     closeInfoWindow();
     final RenderBox? popupButtonObject =
-    infoBtnKey.currentContext?.findRenderObject() as RenderBox?;
+        infoBtnKey.currentContext?.findRenderObject() as RenderBox?;
     if (!isInfoWindowOpened && popupButtonObject != null) {
       final RenderBox? overlay =
-      Overlay.of(context).context.findRenderObject() as RenderBox?;
+          Overlay.of(context).context.findRenderObject() as RenderBox?;
       if (overlay != null) {
         final double screenWidth = MediaQuery.of(context).size.width;
         final buttonPosition = popupButtonObject.localToGlobal(Offset.zero);
@@ -33,9 +33,10 @@ class ShowAppTooltip {
           // Adjust width of tooltip here
           // Once you adjust width you need to arrange content position as well
           width: (screenWidth - (AppDimens.dimensScreenHorizontalMargin.w * 7)),
-          marginEnd: (screenWidth -
-              (AppDimens.dimensScreenHorizontalMargin.w * 2) -
-              buttonPosition.dx),
+          marginEnd:
+              (screenWidth -
+                  (AppDimens.dimensScreenHorizontalMargin.w * 2) -
+                  buttonPosition.dx),
           contentWidget: contentWidget,
           toolTipArrowPosition: toolTipArrowPosition,
         );
@@ -70,9 +71,7 @@ class ShowAppTooltip {
               onVerticalDragStart: (v) {
                 closeInfoWindow();
               },
-              child: Container(
-                color: Colors.transparent,
-              ),
+              child: Container(color: Colors.transparent),
             ),
           ),
         );
@@ -95,30 +94,32 @@ class ShowAppTooltip {
         return Positioned(
           // Here: Once you adjust width you need to arrange content position
           // Here: Even when you change content height you need to change position
-          top: toolTipArrowPosition == ToolTipArrowPosition.bottom
-              ? buttonPosition.dy - (buttonSize.height * 6)
-              : buttonPosition.dy + (buttonSize.height * 2),
+          top:
+              toolTipArrowPosition == ToolTipArrowPosition.bottom
+                  ? buttonPosition.dy - (buttonSize.height * 6)
+                  : buttonPosition.dy + (buttonSize.height * 2),
           right: AppDimens.dimensScreenHorizontalMargin.w + AppDimens.dimens5.w,
           width: width,
           child: Material(
             color: Colors.transparent,
             child: Container(
               decoration: ShapeDecoration(
-                shape: toolTipArrowPosition == ToolTipArrowPosition.bottom
-                    ? BottomArrowClipperShadow(
-                  arrowHeight: AppDimens.dimens10.h,
-                  arrowWidth: AppDimens.dimens16.w,
-                  rightMargin: marginEnd,
-                )
-                    : TopArrowClipperShadow(
-                  arrowHeight: AppDimens.dimens10.h,
-                  arrowWidth: AppDimens.dimens16.w,
-                  rightMargin: marginEnd,
-                ),
+                shape:
+                    toolTipArrowPosition == ToolTipArrowPosition.bottom
+                        ? BottomArrowClipperShadow(
+                          arrowHeight: AppDimens.dimens10.h,
+                          arrowWidth: AppDimens.dimens16.w,
+                          rightMargin: marginEnd,
+                        )
+                        : TopArrowClipperShadow(
+                          arrowHeight: AppDimens.dimens10.h,
+                          arrowWidth: AppDimens.dimens16.w,
+                          rightMargin: marginEnd,
+                        ),
                 color: AppColors.colorWhite,
                 shadows: [
                   BoxShadow(
-                    color: AppColors.colorBlack.withOpacity(0.25),
+                    color: AppColors.colorBlack.withValues(alpha: 0.25),
                     blurRadius: AppDimens.dimens5.r,
                     spreadRadius: AppDimens.dimens1.r,
                     offset: const Offset(
@@ -133,9 +134,7 @@ class ShowAppTooltip {
                 vertical: AppDimens.dimens10.h,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  AppDimens.dimens5.r,
-                ),
+                borderRadius: BorderRadius.circular(AppDimens.dimens5.r),
                 child: contentWidget,
               ),
             ),

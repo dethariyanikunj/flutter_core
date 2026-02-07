@@ -24,7 +24,7 @@ class AppScreenTitleBar extends StatelessWidget {
         color: AppColors.colorWhite,
         boxShadow: [
           BoxShadow(
-            color: AppColors.colorBlack.withOpacity(0.1),
+            color: AppColors.colorBlack.withValues(alpha: 0.1),
             spreadRadius: 5,
             blurRadius: 10,
             offset: const Offset(0, 4),
@@ -38,13 +38,8 @@ class AppScreenTitleBar extends StatelessWidget {
           child: Row(
             children: [
               if (!isBackButtonVisible)
-                SizedBox(
-                  width: AppDimens.dimensScreenHorizontalMargin.w,
-                ),
-              if (isBackButtonVisible)
-                SizedBox(
-                  width: AppDimens.dimens7.w,
-                ),
+                SizedBox(width: AppDimens.dimensScreenHorizontalMargin.w),
+              if (isBackButtonVisible) SizedBox(width: AppDimens.dimens7.w),
               if (isBackButtonVisible)
                 Material(
                   color: AppColors.colorTransparent,
@@ -56,13 +51,9 @@ class AppScreenTitleBar extends StatelessWidget {
                         Get.back();
                       }
                     },
-                    borderRadius: BorderRadius.circular(
-                      AppDimens.dimens20.r,
-                    ),
+                    borderRadius: BorderRadius.circular(AppDimens.dimens20.r),
                     child: Padding(
-                      padding: EdgeInsets.all(
-                        AppDimens.dimens15.w,
-                      ),
+                      padding: EdgeInsets.all(AppDimens.dimens15.w),
                       child: AppImageView(
                         imagePath: AppAssets.icBackArrow,
                         width: AppDimens.dimens16.w,
