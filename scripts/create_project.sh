@@ -20,6 +20,46 @@ else
     echo "✅ Mason CLI is already installed."
 fi
 
+# 1️⃣.1️⃣ Ensure FVM & Flutter Version are Ready
+REQUIRED_FLUTTER_VERSION="3.38.9"
+
+check_and_install_fvm() {
+    echo "💎 Checking FVM configuration..."
+    if ! command -v fvm &> /dev/null; then
+        echo "⚠️  FVM is not installed."
+        read -p "Do you want to install FVM globally? (y/N): " install_fvm
+        if [[ "$install_fvm" =~ ^[Yy]$ ]]; then
+            echo "📥 Installing FVM..."
+            dart pub global activate fvm
+            export PATH="$HOME/.pub-cache/bin:$PATH"
+            echo "✅ FVM installed successfully."
+        else
+            echo "❌ FVM is required for this script. Exiting."
+            exit 1
+        fi
+    fi
+
+    echo "🔍 Checking for Flutter $REQUIRED_FLUTTER_VERSION..."
+    if fvm list | grep -q "$REQUIRED_FLUTTER_VERSION"; then
+        echo "✅ Flutter $REQUIRED_FLUTTER_VERSION is available via FVM."
+    else
+        echo "⚠️  Flutter $REQUIRED_FLUTTER_VERSION is missing."
+        read -p "Do you want to install Flutter $REQUIRED_FLUTTER_VERSION via FVM? (Y/n): " install_flutter
+        install_flutter=${install_flutter:-Y} # Default to Yes
+        
+        if [[ "$install_flutter" =~ ^[Yy]$ ]]; then
+            echo "⬇️  Installing Flutter $REQUIRED_FLUTTER_VERSION..."
+            fvm install "$REQUIRED_FLUTTER_VERSION"
+            echo "✅ Flutter $REQUIRED_FLUTTER_VERSION installed."
+        else
+            echo "❌ Flutter $REQUIRED_FLUTTER_VERSION is required. Exiting."
+            exit 1
+        fi
+    fi
+}
+
+check_and_install_fvm
+
 # 2️⃣ Prompt for Project Name
 read -p "Enter Flutter project name (use _ instead of space): " PROJECT_NAME
 PROJECT_NAME=${PROJECT_NAME// /_}  # Replace spaces with underscores
@@ -52,9 +92,25 @@ case $PROJECT_TYPE in
 esac
 
 # 6️⃣ Prompt for Package Name (Organization)
+# 6️⃣ Prompt for Package Name (Organization)
 read -p "Enter Organization name (e.g., com.example): " ORGANIZATION_NAME
+DEFAULT_PACKAGE_NAME="${ORGANIZATION_NAME}.${PROJECT_NAME}"
+
+echo "📦 Default Package Name: $DEFAULT_PACKAGE_NAME"
+read -p "Enter Package Name (Leave blank to use default): " CUSTOM_PACKAGE_NAME
+
+if [ ! -z "$CUSTOM_PACKAGE_NAME" ]; then
+    if [[ "$CUSTOM_PACKAGE_NAME" != *".$PROJECT_NAME" ]]; then
+         echo "⚠️  Custom package name must end with '.$PROJECT_NAME' to match Flutter's creation logic."
+         echo "   Reverting to default: $DEFAULT_PACKAGE_NAME"
+    else
+         ORGANIZATION_NAME=${CUSTOM_PACKAGE_NAME%.$PROJECT_NAME}
+         echo "✅ Organization updated to: $ORGANIZATION_NAME"
+    fi
+fi
+
 PACKAGE_NAME="${ORGANIZATION_NAME}.${PROJECT_NAME}"
-echo "📦 Package Name: $PACKAGE_NAME"
+echo "📦 Final Package Name: $PACKAGE_NAME"
 
 # 7️⃣ Select Android Language
 read -p "Select Android language (java/kotlin) [Default: kotlin]: " ANDROID_LANG
@@ -82,8 +138,8 @@ fi
 PLATFORM_STRING=$(IFS=,; echo "${SELECTED_PLATFORMS[*]}")
 
 # 🔟 Create the Flutter Project
-echo "🛠️ Creating Flutter project..."
-flutter create --project-name "$PROJECT_NAME" \
+echo "🛠️ Creating Flutter project using FVM ($REQUIRED_FLUTTER_VERSION)..."
+fvm spawn "$REQUIRED_FLUTTER_VERSION" flutter create --project-name "$PROJECT_NAME" \
     --org "$ORGANIZATION_NAME" \
     --description "$PROJECT_DESCRIPTION" \
     --template "$PROJECT_TYPE" \
@@ -130,47 +186,9 @@ mason get
 echo "🔧 Generating files from Mason..."
 mason make "$MASON_BRICK_NAME" --on-conflict overwrite
 
-# 1️⃣5️⃣ Setup FVM (Flutter Version Management)
-echo "💎 Checking FVM configuration..."
-
-REQUIRED_FLUTTER_VERSION="3.38.9"
-
-setup_fvm() {
-    if ! command -v fvm &> /dev/null; then
-        echo "⚠️  FVM is not installed."
-        read -p "Do you want to install FVM globally? (y/N): " install_fvm
-        if [[ "$install_fvm" =~ ^[Yy]$ ]]; then
-            echo "📥 Installing FVM..."
-            dart pub global activate fvm
-            export PATH="$HOME/.pub-cache/bin:$PATH"
-            echo "✅ FVM installed successfully."
-        else
-            echo "⚠️  Skipping FVM setup. You can setup it manually later."
-            return
-        fi
-    fi
-
-    echo "🔍 Checking for Flutter $REQUIRED_FLUTTER_VERSION..."
-    if fvm list | grep -q "$REQUIRED_FLUTTER_VERSION"; then
-        echo "✅ Flutter $REQUIRED_FLUTTER_VERSION is already installed via FVM."
-        fvm use "$REQUIRED_FLUTTER_VERSION" --force
-    else
-        echo "⚠️  Flutter $REQUIRED_FLUTTER_VERSION is missing."
-        read -p "Do you want to install Flutter $REQUIRED_FLUTTER_VERSION via FVM? (Y/n): " install_flutter
-        install_flutter=${install_flutter:-Y} # Default to Yes
-        
-        if [[ "$install_flutter" =~ ^[Yy]$ ]]; then
-            echo "⬇️  Installing Flutter $REQUIRED_FLUTTER_VERSION..."
-            fvm install "$REQUIRED_FLUTTER_VERSION"
-            fvm use "$REQUIRED_FLUTTER_VERSION" --force
-            echo "✅ Flutter $REQUIRED_FLUTTER_VERSION configured."
-        else
-            echo "⚠️  Skipping Flutter installation."
-        fi
-    fi
-}
-
-setup_fvm
+# 1️⃣5️⃣ Configure Project with FVM
+echo "💎 Configuring FVM for project..."
+fvm use "$REQUIRED_FLUTTER_VERSION" --force
 
 echo "✅ Flutter project '$PROJECT_NAME' created successfully at '$PROJECT_LOCATION/$PROJECT_NAME'!"
 echo "🚀 Ready to start coding! Open in your IDE (Android studio): cd $PROJECT_LOCATION/$PROJECT_NAME && flutter pub get"
